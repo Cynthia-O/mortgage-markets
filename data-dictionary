@@ -1,0 +1,8 @@
+#Data Dictionary for newly generated vars (all other column headers derive from source data):
+#_refinance_ = denotes refinance subset of variable it's embedded in
+#_new_ or _new_purchase_ = denotes home purchase subset of variable it's embedded in
+#_per_capita_ = denotes variable it's embedded in has been adjusted per capita of the state (per capita changes by year)
+#volume_state_loans = volume of refinance + home purchase loans within a given state and year
+#sum_state_loans = total dollar value in 1000s of refinance + home purchase loans within a given state and year
+#pop_est = census-derived population size for a given state and year
+#med_loan_size = median loan value in $1000s
