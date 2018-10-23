@@ -11,7 +11,7 @@
 #less than 1 MB; census data downloads fast
 
 #title HMDA data as HMDA[year] - depends on year you downloaded
-#this script currenlty handles one HMDA year at a time
+#this script currently handles one HMDA year at a time
 #title Census data as Census - will include multiple years
 #I retitled focal Census fields with titles I like to type more, e.g. "pop_est_2017" replacing "POPESTIMATE2017"
 #load necessary packages:
