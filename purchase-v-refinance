@@ -1,1 +1,43 @@
+#script to plot, by state, med home purchase loan size (in $1,000s) against med refi loan sizemed loan size in $1,000s
+#dot size indicates total number of loans originated in year - not adjusted per capita (yet)
+#first summarize joined data created earlier (HMDA-join-Census)
+by_loan_type_2017<-HMDA_census_2017%>%
+  group_by(loan_purpose_name,state_abbr)%>%
+  summarize(med_loan_size=median(loan_amount_000s,na.rm=TRUE),volume_state_loans=length(loan_amount_000s),pop_est_2017=median(pop_est_2017))
+#median used to trick summarize into including pop_est var... probably there's a better way to do this, too
 
+#to make a plot that compares new purchases to refinance med sizes ($1,000s) within state, first create new df for each
+loan_type_refinance_2017<-by_loan_type_2017%>%
+  filter(loan_purpose_name=="Refinancing")%>%
+  mutate(med_loan_size_refinance_2017=med_loan_size)%>%
+  mutate(volume_state_loans_refinance_2017=volume_state_loans)%>%
+  select(-med_loan_size)%>%
+  filter(state_abbr!="")
+loan_type_new_2017<-by_loan_type_2017%>%
+  filter(loan_purpose_name=="Home purchase")%>%
+  mutate(med_loan_size_new_2017=med_loan_size)%>%
+  mutate(volume_state_loans_new_2017=volume_state_loans)%>%
+  select(-med_loan_size)%>%
+  select(-volume_state_loans)%>% 
+  select(-pop_est_2017)%>% #so that it isn't a duplicate of the refi est pop 2017 when joined later
+  filter(state_abbr!="")
+
+#now join these two by state to bring subsets back together into one df; also get rid of that non-NA "" state_abbr level
+loan_type_both_2017<-left_join(loan_type_new_2017,loan_type_refinance_2017,by=c("state_abbr"="state_abbr"))%>%
+  ungroup()%>%
+  select(-loan_purpose_name.x)%>%
+  select(-loan_purpose_name.y)
+
+#now to plot 2017
+per_cap_sum_loans_2017<-ggplot(loan_type_both_2017,aes(x=med_loan_size_refinance_2017,y=med_loan_size_new_2017))+
+  geom_point(aes(colour=state_abbr,size=volume_state_loans/1000))+
+  geom_text_repel(aes(label=state_abbr))+
+  theme_classic(base_size=14)+
+  geom_abline(intercept=0,slope=1,colour="black",size=1)+
+  xlab("Median refinance loan size in 2017")+
+  ylab("Median new purchases loan size in 2017")+
+  xlim(0,500)+ylim(0,500)+
+  guides(colour=FALSE)+
+  theme(legend.position=c(0.2,0.8))+
+  scale_size_continuous(name="Total volume loans (1000s)")
+per_cap_sum_loans_2017
