@@ -1,0 +1,49 @@
+#download Home Mortgage Disclosure Act (HMDA) data from https://www.consumerfinance.gov/data-research/hmda/explore
+#filter Select year(s) of data:2017 [later other focal years]
+#filter Loan - What is the loan being used for?: Home purchase, Refinancing
+#alternatively in dplyr with full data set "filter(loan_purpose_name%in%c("Refinancing","Home purchase"))"
+#but big data set is already big
+#leave all other settings default
+#chunky files ~4 GB each; allow time for downloads
+
+#download 2016-2017 US Census data from https://www.census.gov/data/tables/2017/demo/popest/state-total.html#par_textimage
+#select census "Population, populatio change, and estimated components of population change: April 1,2010 to July 1, 2017 (NST-EST2017-alldata)"
+#less than 1 MB; census data downloads fast
+
+#title HMDA data as HMDA[year] - depends on year you downloaded
+#this script currenlty handles one HMDA year at a time
+#title Census data as Census - will include multiple years
+#I retitled focal Census fields with titles I like to type more, e.g. "pop_est_2017" replacing "POPESTIMATE2017"
+#load necessary packages:
+library(dplyr)
+library(ggplot2)
+library(ggrepel)
+
+#join census and HMDA2017 data by their one shared variable - state_name:
+levels(HMDA2017$state_name);levels(census$state_name) #they don't match up - more factors in census than HMDA2017, and "" in HMDA
+setdiff(levels(HMDA2017$state_name),levels(census$state_name));setdiff(levels(census$state_name),levels(HMDA2017$state_name))
+
+#tidy up census data by removing some state-level names that aren't present in the HMDA data
+#then dropping ghost levels that linger after dplyr filters
+#shouldn't need to do this again for additional HMDA data, if HMDA is consistent in state_names from year to year
+census<-census%>%
+  filter(state_name!="United States")%>%
+  filter(state_name!="Midwest Region")%>%
+  filter(state_name!="South Region")%>%
+  filter(state_name!="Northeast Region")%>%
+  filter(state_name!="West Region")%>%
+  filter(state_name!="U.S. Virgin Islands")
+census$state_name<-droplevels(census$state_name)
+HMDA2017<-HMDA2017%>%
+  filter(state_name!="")
+HMDA2017$state_name<-droplevels(HMDA2017$state_name)
+#could use HMDA2017<-droplevels(HMDA2017) instead if previous doesn't work
+
+#check to see if this was sufficient to match up state_name fields, prior to joining
+setdiff(levels(HMDA2017$state_name),levels(census$state_name));setdiff(levels(census$state_name),levels(HMDA2017$state_name))
+#character (0) twice = looks good!
+
+#join the two files
+HMDA_census_2017<-inner_join(census,HMDA2017,by=c("state_name"="state_name"))
+#that makes a huge file... need to track down a way to just join by state_name and pull pop_est_2017 along
+
