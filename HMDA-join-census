@@ -33,6 +33,7 @@ census<-census%>%
   filter(state_name!="Northeast Region")%>%
   filter(state_name!="West Region")%>%
   filter(state_name!="U.S. Virgin Islands")
+#can leave U.S. Virgin Islands in for 2017 if you prefer, but it's not present in all years of HMDA data
 census$state_name<-droplevels(census$state_name)
 HMDA2017<-HMDA2017%>%
   filter(state_name!="U.S. Virgin Islands")%>%
