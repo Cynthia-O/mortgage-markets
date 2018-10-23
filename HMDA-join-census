@@ -35,6 +35,7 @@ census<-census%>%
   filter(state_name!="U.S. Virgin Islands")
 census$state_name<-droplevels(census$state_name)
 HMDA2017<-HMDA2017%>%
+  filter(state_name!="U.S. Virgin Islands")%>%
   filter(state_name!="")
 HMDA2017$state_name<-droplevels(HMDA2017$state_name)
 #could use HMDA2017<-droplevels(HMDA2017) instead if previous doesn't work
