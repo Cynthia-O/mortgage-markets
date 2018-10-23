@@ -1,10 +1,12 @@
 #download Home Mortgage Disclosure Act (HMDA) data from https://www.consumerfinance.gov/data-research/hmda/explore
 #filter Select year(s) of data:2017 [later other focal years]
-#filter Loan - What is the loan being used for?: Home purchase, Refinancing
+#drop-down "Select suggested filters" to "All originated mortgages (modified)
+#drop-down "LOAN" navigate to "What is the loan being used for?" toggle "Home purchase" + "Refinancing"
 #alternatively in dplyr with full data set "filter(loan_purpose_name%in%c("Refinancing","Home purchase"))"
-#but big data set is already big
+#but big data set is already big; better to tailor download
+#LENDER filter would be great, but FFIEC's disclosure tool still broken as of 20181022
 #leave all other settings default
-#chunky files ~4 GB each; allow time for downloads
+#chunky files ~4-7 GB each; allow time for downloads
 
 #download 2016-2017 US Census data from https://www.census.gov/data/tables/2017/demo/popest/state-total.html#par_textimage
 #select census "Population, populatio change, and estimated components of population change: April 1,2010 to July 1, 2017 (NST-EST2017-alldata)"
